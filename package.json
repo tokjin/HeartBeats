@@ -1,0 +1,26 @@
+{
+  "name": "heartbeats",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "ant-plus": "^0.1.24",
+    "express": "^4.17.1",
+    "http": "^0.0.1-security",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tokjin/HeartBeats.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tokjin/HeartBeats/issues"
+  },
+  "homepage": "https://github.com/tokjin/HeartBeats#readme"
+}
