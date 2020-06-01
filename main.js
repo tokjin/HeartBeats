@@ -6,8 +6,10 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const PORT = process.env.PORT || 1242;
 
-const timeout = 7;
-let devices = {};
+const timeout = 10;
+let deviceId = 0;
+let deviceCounts = {};
+let deviceBeat = {};
 let timeoutCount = timeout;
 let stick = new Ant.GarminStick2;
 let sensor = new Ant.HeartRateSensor(stick);
@@ -23,19 +25,19 @@ io.on('connection', (socket) => {
 
 sensor.on('hbData', data => {
     let did = 'id' + data.DeviceID;
-    if (!devices[did]) devices[did] = data.BeatCount;
-    else if (devices[did] != data.BeatCount) {
-        devices[did] = data.BeatCount;
+    if (!deviceCounts[did]) deviceCounts[did] = data.BeatCount;
+    else if (deviceCounts[did] != data.BeatCount) {
+        deviceCounts[did] = data.BeatCount;
         io.emit('beats', data.DeviceID, data.ComputedHeartRate);
-        //process.stdout.write(',' + data.ComputedHeartRate)
-        //console.dir(data);
+        deviceBeat[did] = data.ComputedHeartRate;
     }
     timeoutCount = timeout;
 });
 
+
 stick.on('startup', () => {
     console.log('Stick startup');
-    sensor.attach(0, 0);
+    sensor.attach(0, deviceId);
 });
 
 stick.on('shutdown', () => {
@@ -43,16 +45,14 @@ stick.on('shutdown', () => {
 });
 
 sensor.on('attached', () => {
-    console.log('device1 / attached');
     timeoutCount = timeout;
 });
 
 sensor.on('detached', () => {
-    console.log('device1 / detached');
     timeoutCount = timeout;
     
     try {
-        sensor.attach(0, 0);
+        sensor.attach(0, deviceId);
         
     } catch(e) {
         console.log(e);
@@ -65,19 +65,13 @@ if(!stick.open()) console.log('Stick open failed!');
 
 let timeoutCheckLoop = setInterval(() => {
     console.clear();
-    console.dir(devices);
+    console.log('count:', JSON.stringify(deviceCounts));
+    console.log('beat:', JSON.stringify(deviceBeat));
+    console.log('timeout:', timeoutCount);
     
     timeoutCount--;
     if (timeoutCount <= 0) {
-        timeoutCount = timeout;
-        console.log('timeout? re-attach...');
-        
-        try {
-            sensor.detach();
-            //sensor.attach(0, 0);
-        } catch(e) {
-            
-        }
+        process.exit();
     }
 
 }, 1000);
