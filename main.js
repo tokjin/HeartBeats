@@ -7,7 +7,7 @@ const io = require('socket.io')(http, { origins: '*:*'});
 const PORT = process.env.PORT || 1242;
 
 const timeout = 10;
-let deviceId = 40725;
+let deviceId = 0;
 let deviceCounts = {};
 let deviceBeat = {};
 let timeoutCount = timeout;
